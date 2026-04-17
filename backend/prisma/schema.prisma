@@ -11,3 +11,60 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id    String  @id @default(cuid())
+  email String  @unique
+  password String
+  createdAt DateTime @default(now())
+  
+  appointments Appointment[]
+  reviews Review[]
+}
+
+model Review {
+  id    String  @id @default(cuid())
+  rating Int     // 1-5 stars
+  comment String?
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model TimeSlot {
+  id    String  @id @default(cuid())
+  startTime DateTime
+  endTime DateTime
+  isAvailable Boolean @default(true)
+  createdAt DateTime @default(now())
+  
+  appointments Appointment[]
+}
+
+model Appointment {
+  id    String  @id @default(cuid())
+  status String @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  notes String?
+  createdAt DateTime @default(now())
+  
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  
+  timeSlotId String
+  timeSlot TimeSlot @relation(fields: [timeSlotId], references: [id])
+  
+  payment Payment?
+}
+
+model Payment {
+  id    String  @id @default(cuid())
+  amount Float
+  status String @default("PENDING") // PENDING, PAID, FAILED
+  stripePaymentId String?
+  createdAt DateTime @default(now())
+  
+  appointmentId String @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
