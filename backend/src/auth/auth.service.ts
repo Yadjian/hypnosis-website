@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +14,10 @@ export class AuthService {
 
     if (existingUser) {
       throw new ConflictException('Email already exists');
+    }
+
+    if (createUserDto.password !== createUserDto.passwordConfirm) {
+      throw new BadRequestException('Passwords do not match');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
