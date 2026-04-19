@@ -16,6 +16,7 @@ model User {
   id    String  @id @default(cuid())
   email String  @unique
   password String
+  pseudo String @unique
   createdAt DateTime @default(now())
   
   appointments Appointment[]

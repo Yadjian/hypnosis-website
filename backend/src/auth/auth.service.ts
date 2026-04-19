@@ -31,12 +31,14 @@ export class AuthService {
       data: {
         email: createUserDto.email,
         password: hashedPassword,
+        pseudo: createUserDto.pseudo,
       },
     });
 
     return {
       id: user.id,
       email: user.email,
+      pseudo: user.pseudo,
       createdAt: user.createdAt,
     };
   }

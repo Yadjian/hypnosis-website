@@ -9,4 +9,7 @@ export class CreateUserDto {
 
     @IsString()
     passwordConfirm: string;
+
+    @IsString()
+    pseudo: string;
 }

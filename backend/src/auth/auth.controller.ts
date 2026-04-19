@@ -24,6 +24,7 @@ export class AuthController {
     return {
       id: req.user.userId,
       email: req.user.email,
+      pseudo: req.user.pseudo,
       message: 'Profil récupéré avec succès'
     };
   }
