@@ -1,9 +1,17 @@
-import { IsEmail, IsString } from 'class-validator';
+/**
+ * DTO for user login
+ * Supports login by email OR pseudo
+ */
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginUserDto {
-  @IsEmail()
-  email: string;
-
+  /** Email or pseudo of the user */
   @IsString()
-  password: string;
+  @IsNotEmpty()
+  identifier!: string;
+
+  /** User password */
+  @IsString()
+  @IsNotEmpty()
+  password!: string;
 }
