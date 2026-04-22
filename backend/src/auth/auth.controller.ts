@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import type { Response } from 'express';
+import { Res } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -24,10 +26,25 @@ export class AuthController {
    * Authenticate user with email or pseudo + password
    * Body: { identifier, password }
    * Returns: { access_token }
+   * Sets: refresh_token cookie (httpOnly)
    */
   @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto) {
-    return this.authService.login(loginUserDto);
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.login(loginUserDto);
+
+    res.cookie('refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return {
+      access_token: tokens.access_token,
+    };
   }
 
   /**

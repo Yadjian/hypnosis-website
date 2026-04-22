@@ -22,8 +22,8 @@ import { JwtStrategy } from './jwt.strategy';
       useFactory: async (configService: ConfigService) => ({
         // JWT secret from environment variables
         secret: configService.get<string>('JWT_SECRET'),
-        // Token expiration: 24 hours
-        signOptions: { expiresIn: '24h' },
+        // Token expiration: 15 minutes
+        signOptions: { expiresIn: '15m' },
       }),
     }),
   ],

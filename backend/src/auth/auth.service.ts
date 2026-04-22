@@ -14,6 +14,29 @@ export class AuthService {
   ) {}
 
   /**
+ * Generate access and refresh tokens
+ * - Access token: short-lived (15 minutes)
+ * - Refresh token: long-lived (7 days)
+ */
+private async getTokens(userId: string, email: string, pseudo: string) {
+  const payload = { sub: userId, email, pseudo };
+
+  const accessToken = this.jwtService.sign(payload, {
+    expiresIn: '15m',
+  });
+
+  const refreshToken = this.jwtService.sign(payload, {
+    secret: process.env.JWT_REFRESH_SECRET,
+    expiresIn: '7d',
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+}
+
+  /**
    * Register a new user
    * - Validates email uniqueness
    * - Validates password confirmation
@@ -78,11 +101,13 @@ export class AuthService {
     throw new UnauthorizedException('Invalid credentials');
   }
 
-  const payload = { sub: user.id, email: user.email };
-  const access_token = this.jwtService.sign(payload);
+  const tokens = await this.getTokens(user.id, user.email, user.pseudo);
 
-    return { access_token };
-  }
+  return {
+    access_token: tokens.accessToken,
+    refresh_token: tokens.refreshToken,
+  };
+}
 
   /**
    * Update user profile
